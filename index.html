@@ -1497,7 +1497,7 @@ footer .report .ph{color:var(--gold-lt)}
    same value (ankyra-v2, ankyra-v3 ...). Add any new always-needed file
    to SHELL in sw.js.
    ===================================================================== */
-const APP_VERSION = "ankyra-v2";
+const APP_VERSION = "ankyra-v3";
 
 /* Report a mistake: put the address between the quotes to switch on the
    "Report a mistake" email links (footer, About these notes). */
@@ -1948,6 +1948,8 @@ function renderChapterHTML(bk, chIdx){
       return; }
     if(blk.k === "r"){ const rt = blk.c[0]||"";
       out += '<div class="r">'+ (/^\(/.test(rt) ? linkRefs(rt, false) : rt) +'</div>'; return; }
+    // Psalm 119's stanza letters and names are headings: they belong to no verse
+    if(blk.k === "qa"){ out += '<p class="qa">'+ (blk.c[0]||"") +'</p>'; return; }
     let inner = "", open = false;
     if(carry){ inner += '<span class="vs" data-v="'+carry+'">'; open = true; }
     blk.c.forEach(it=>{
@@ -2738,7 +2740,7 @@ function loadVerses(){
           let cur = null, buf = "";
           const flush = ()=>{ if(cur !== null && buf.trim()){ const t = buf.trim(); out.push({a:meta.a, c:ci+1, v:cur, t:t, n:norm(t)}); } };
           ch.b.forEach(blk=>{
-            if(blk.k === "s" || blk.k === "r" || blk.k === "b") return;
+            if(blk.k === "s" || blk.k === "r" || blk.k === "b" || blk.k === "qa") return;
             blk.c.forEach(it=>{ if(typeof it === "string") buf += " " + stripNotes(it); else if(it.v){ flush(); cur = it.v; buf = ""; } });
           });
           flush();
@@ -2871,7 +2873,7 @@ function paintSearch(q){
         const el = document.getElementById("sgoprev"); if(!el || lastQuery !== q) return;
         const ch = BIBLE.books[ref.a].c[ref.c-1]; if(!ch) return;
         const v1 = +ref.v, v2 = +(ref.v2 || ref.v); let out = "", cur = null;
-        ch.b.forEach(blk=>{ if(blk.k==="s"||blk.k==="r"||blk.k==="b") return;
+        ch.b.forEach(blk=>{ if(blk.k==="s"||blk.k==="r"||blk.k==="b"||blk.k==="qa") return;
           blk.c.forEach(it=>{ if(typeof it === "string"){ if(cur>=v1 && cur<=v2) out += " " + stripNotes(it); } else if(it.v) cur = +it.v; }); });
         REFPREV[q] = out.trim().length > 320 ? out.trim().slice(0, 320) + "…" : out.trim();
         el.textContent = REFPREV[q];

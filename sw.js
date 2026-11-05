@@ -9,7 +9,7 @@
    On update this worker deletes only caches whose names start "cob-" (the site's old name)
    or "ankyra-" (other than these two). It never touches anything else, and never clears
    anyone's saved settings. */
-const VERSION = "ankyra-v5";
+const VERSION = "ankyra-v6";
 const SHELL = VERSION;
 const DATA = "ankyra-data";
 const SHELL_FILES = [
@@ -20,7 +20,7 @@ const SHELL_FILES = [
   "./assets/fonts/cinzel-latin.woff2", "./assets/fonts/ebgaramond-latin.woff2", "./assets/fonts/ebgaramond-italic-latin.woff2",
   "./assets/fonts/poppins-300-latin.woff2", "./assets/fonts/poppins-400-latin.woff2", "./assets/fonts/poppins-500-latin.woff2"
 ];
-// PDFs rewritten in this release: drop any copy saved for offline reading, so the new one is saved next time
+// PDFs rewritten recently (ankyra-v5): drop any copy saved for offline reading, so the new one is saved next time
 const REPLACED_PDFS = ["docs/Ankyra-The-Gospel-Given-to-You-Straight.pdf"];
 const DATA_FILES = ["./assets/notes/index.json", "./assets/guides.json", "./assets/glossary.json"];
 const MARK_FROM_OLD = "./__ankyra/from-old-site";   // this device had the site before it was renamed

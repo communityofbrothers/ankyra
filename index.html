@@ -1497,7 +1497,7 @@ footer .report .ph{color:var(--gold-lt)}
    same value (ankyra-v2, ankyra-v3 ...). Add any new always-needed file
    to SHELL in sw.js.
    ===================================================================== */
-const APP_VERSION = "ankyra-v5";
+const APP_VERSION = "ankyra-v6";
 
 /* Report a mistake: put the address between the quotes to switch on the
    "Report a mistake" email links (footer, About these notes). */
@@ -1777,11 +1777,13 @@ function paintResume(){
 }
 
 /* ---------- cards ---------- */
+/* iPhone and iPad save a "download" link's file silently to Downloads (and a home-screen app does nothing at all), so
+   there the link opens the PDF instead; Share then saves or prints it. */
 function card(item){
   const soon = item.status === "soon";
   const link = (!soon && item.url)
-    ? '<a class="get" href="'+item.url+'" download target="_blank" rel="noopener">'
-      + 'Download PDF &darr;</a>'
+    ? (isIOS() ? '<a class="get" href="'+item.url+'" target="_blank" rel="noopener">Open PDF &rarr;</a>'
+           : '<a class="get" href="'+item.url+'" download target="_blank" rel="noopener">Download PDF &darr;</a>')
     : '<span>'+(soon ? "" : "Coming soon")+'</span>';
   const open = (!soon && item.url)
     ? ' data-pdf="'+item.url+'"' : '';
@@ -2503,10 +2505,16 @@ function wirePdfCards(){
     c.dataset.wired = "1";
     c.addEventListener("click", function(e){
       if(e.target.closest("a")) return;   // the explicit link handles itself
-      savePdf(c.getAttribute("data-pdf"));
-      window.open(c.getAttribute("data-pdf"), "_blank", "noopener");
+      openPdf(c.getAttribute("data-pdf"));
     });
   });
+}
+/* Open a PDF in a new tab through an ordinary link, which every browser allows from a tap (Safari on iPhone and iPad
+   can refuse a scripted window.open). The click is caught below, which also saves a copy. */
+function openPdf(url){
+  const a = document.createElement("a");
+  a.href = url; a.target = "_blank"; a.rel = "noopener";
+  document.body.appendChild(a); a.click(); a.remove();
 }
 /* The browser opens PDFs itself (see sw.js); this keeps a copy for reading without a signal. */
 function savePdf(url){ try{ if("serviceWorker" in navigator && navigator.serviceWorker.controller) fetch(url).catch(function(){}); }catch(e){} }

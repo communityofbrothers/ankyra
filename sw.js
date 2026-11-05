@@ -9,7 +9,7 @@
    On update this worker deletes only caches whose names start "cob-" (the site's old name)
    or "ankyra-" (other than these two). It never touches anything else, and never clears
    anyone's saved settings. */
-const VERSION = "ankyra-v3";
+const VERSION = "ankyra-v4";
 const SHELL = VERSION;
 const DATA = "ankyra-data";
 const SHELL_FILES = [
@@ -112,6 +112,14 @@ self.addEventListener("fetch", e=>{
     })());
     return;
   }
+  // Opening or downloading a PDF: let the browser fetch it itself whenever there's a signal. Safari on iPhone and
+  // iPad shows nothing (it just keeps loading) when a PDF page or download comes through a service worker.
+  // Without a signal, hand over the copy saved when it was last opened, if there is one.
+  if(req.mode === "navigate" && /\/docs\/[^/]+\.pdf$/i.test(path)){
+    if(self.navigator.onLine !== false) return;
+    e.respondWith(caches.match(req, {ignoreSearch: true}).then(hit=>hit || Response.error()));
+    return;
+  }
   if(req.mode === "navigate" || /\/(index\.html)?$/.test(path) || /manifest\.webmanifest$/.test(path)){
     e.respondWith(networkFirst(req, SHELL, 4000));
     return;
@@ -121,7 +129,8 @@ self.addEventListener("fetch", e=>{
     e.respondWith(networkFirst(req, DATA, 3500));
     return;
   }
-  // The Bible text (it never changes), the full-text search file and PDFs: saved copy first.
+  // The Bible text (it never changes), the full-text search file and PDFs (the page saves a copy of each PDF you
+  // open, for reading without a signal): saved copy first.
   if(/\/assets\/bible\//.test(path) || /\/assets\/bsb\.gz$/.test(path) || /\/docs\//.test(path)){
     e.respondWith(cacheFirst(req, DATA));
     return;

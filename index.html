@@ -20,6 +20,15 @@
 <link rel="preload" href="assets/fonts/cinzel-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/ebgaramond-latin.woff2" as="font" type="font/woff2" crossorigin>
 <script>
+/* Reader's settings, applied before the page paints. Light (navy and beige) unless they chose Dark or Match my device. */
+(function(){ var d = document.documentElement, t = "light";
+  try{ t = localStorage.getItem("ankyra-theme") || "light";
+    if(localStorage.getItem("ankyra-motion") === "off") d.classList.add("nomotion");
+    if(localStorage.getItem("ankyra-versenums") === "off") d.classList.add("novn"); }catch(e){}
+  if(t === "auto") t = (window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
+  d.setAttribute("data-theme", t === "dark" ? "dark" : "light"); })();
+</script>
+<script>
 /* Start fetching the book named in the address straight away, before the page has finished loading. */
 (function(){ try{ var m = /^#\/bible\/([1-3]?[A-Za-z]{2,3})/.exec(location.hash) || [];
   var k = m[1] ? m[1].toUpperCase() : null;
@@ -46,12 +55,13 @@
   --navy:#0E1B31; --navy-2:#132441; --navy-3:#1B2F52; --navy-4:#243D66;
   --gold:#C2A24E; --gold-lt:#E0C063; --gold-dp:#A97C2C;
   --gold-dim:rgba(224,192,99,.32);
-  --cream:#FBF9F4; --paper:#FFFFFF;
+  --cream:#F8F4EA; --paper:#F1EADC; /* beige surfaces: no white anywhere */
   --ink:#212C3B; --ink-2:#47536440; --muted:#6B7280;
   --line:#E3E1DA;
   --page-bg:var(--cream); --surface:var(--paper); --text:#212C3B;
-  --gold-ink:#8A6420; /* gold for small text on light backgrounds (the deep gold is too faint there) */
-  --text-2:#4A5568; --text-3:#6B7280; --border:#E3E1DA;
+  --gold-ink:#84601E; /* gold for small text on light backgrounds (the deep gold is too faint there; a touch darker on beige) */
+  --text-2:#4A5568; --text-3:#596170; --border:#DDD4C3;
+  color-scheme:light;
   --display:'Cinzel',Georgia,serif;
   --body:'EB Garamond',Georgia,serif;
   --sans:'Poppins',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
@@ -60,9 +70,9 @@
 *,*::before,*::after{box-sizing:inherit}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --page-bg:#0A1322; --surface:#101E33; --text:#E8EBF1; --text-2:#BAC3D2;
-  --text-3:#8B95A7; --border:#1F3150; --gold-ink:#E0C063;}}
+  --text-3:#8B95A7; --border:#1F3150; --gold-ink:#E0C063; color-scheme:dark}}
 :root[data-theme="dark"]{--page-bg:#0A1322;--surface:#101E33;--text:#E8EBF1;
-  --text-2:#BAC3D2;--text-3:#8B95A7;--border:#1F3150;--gold-ink:#E0C063;}
+  --text-2:#BAC3D2;--text-3:#8B95A7;--border:#1F3150;--gold-ink:#E0C063;color-scheme:dark}
 
 html{scroll-behavior:smooth;scroll-padding-top:calc(64px + env(safe-area-inset-top,0px))}
 body{margin:0;background:var(--page-bg);color:var(--text);
@@ -625,7 +635,7 @@ a.xref:hover{color:#fff;text-decoration-style:solid}
 .menuscrim{display:none}
 body.menuopen{overflow:hidden}
 /* home */
-.hero-logo{width:clamp(120px,24vw,176px);height:auto;margin:0 0 clamp(18px,3vw,26px)}
+.hero-logo{width:clamp(120px,24vw,176px);height:auto;margin:0}
 .hero-verse{margin:0;max-width:34em}
 .hero-verse blockquote{margin:0;font-style:italic;font-size:clamp(1.18rem,3.2vw,1.5rem);line-height:1.5;color:#F0F3F8;
   border-left:3px solid var(--gold-lt);padding:2px 0 2px 18px}
@@ -642,7 +652,9 @@ a.card{text-decoration:none;color:inherit}
   font-weight:500;border-top:1px solid var(--border);padding-top:12px}
 a.card:hover .get{text-decoration:underline}
 .starts{display:grid;gap:1px;background:var(--border);border:1px solid var(--border);margin-top:28px;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+  grid-template-columns:1fr}
+@media(min-width:640px){.starts{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:960px){.starts{grid-template-columns:repeat(3,1fr)}}
 .start{background:var(--surface);padding:22px 22px 18px}
 .start h3{font-family:var(--display);font-weight:600;font-size:1.1rem;color:var(--text);line-height:1.3;margin-bottom:8px}
 .start p{font-size:1rem;line-height:1.6;margin:0 0 12px}
@@ -654,6 +666,85 @@ a.card:hover .get{text-decoration:underline}
 .btnrow{margin:22px 0 0}
 .btn{font-family:var(--sans)}
 button.btn{border-radius:0}
+/* home 2026-11: verse band, mission, settings, gentle motion */
+.seal{position:relative;display:inline-block;line-height:0;margin:0 0 clamp(18px,3vw,26px);border-radius:50%}
+.seal .hero-logo{margin:0;position:relative;z-index:1}
+.seal::before{content:'';position:absolute;inset:-22%;border-radius:50%;z-index:0;opacity:.55;
+  background:radial-gradient(closest-side,rgba(224,192,99,.30),rgba(224,192,99,.08) 62%,transparent)}
+.seal::after{content:'';position:absolute;inset:4.5%;border-radius:50%;z-index:2;pointer-events:none;overflow:hidden;opacity:0;
+  background:linear-gradient(115deg,transparent 38%,rgba(255,240,190,.38) 50%,transparent 62%) no-repeat;background-size:250% 100%}
+.versesec{padding:clamp(44px,7vw,76px) 0;background:radial-gradient(80% 120% at 50% 0%,rgba(194,162,78,.10),transparent 60%),var(--navy)}
+.vfig{margin:0;max-width:40em}
+.vtext{margin:0;font-style:italic;font-size:clamp(1.18rem,3vw,1.5rem);line-height:1.55;color:#F0F3F8;
+  border-left:3px solid var(--gold-lt);padding:2px 0 2px 20px}
+.vcap{font-family:var(--sans);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;margin:12px 0 0 23px;color:#AEB8C9}
+.vcap a{color:var(--gold-lt);text-decoration:none;border-bottom:1px solid rgba(224,192,99,.4);margin-right:12px}
+.vcap a:hover{color:#fff}
+.vcap span{letter-spacing:.06em;text-transform:none;font-size:.84rem;display:inline-block}
+.vctl{display:flex;align-items:center;gap:6px;margin:16px 0 0 11px}
+.vdots{display:flex;gap:2px}
+.vdots button,.vpause{width:32px;height:32px;padding:0;border:0;background:none;cursor:pointer;display:grid;place-items:center;
+  border-radius:50%;color:var(--gold-lt)}
+.vdots button::before{content:'';width:8px;height:8px;border-radius:50%;border:1px solid rgba(224,192,99,.75);transition:background .25s,transform .25s}
+.vdots button[aria-current="true"]::before{background:var(--gold-lt);border-color:var(--gold-lt);transform:scale(1.25)}
+.vdots button:hover::before{border-color:#fff}
+.vpause svg{width:16px;height:16px}
+.vpause .ig{display:none}.vpause[aria-pressed="true"] .ig{display:block}.vpause[aria-pressed="true"] .ip{display:none}
+.vpause:hover{color:#fff}
+.narrowp{max-width:760px}
+.aims{display:grid;gap:17px;margin-top:30px;grid-template-columns:1fr}
+@media(min-width:820px){.aims{grid-template-columns:repeat(3,1fr)}}
+.aim{background:var(--page-bg);border:1px solid var(--border);border-top:2.5px solid var(--gold);padding:23px 23px 25px}
+.aim .n{font-family:var(--sans);font-size:.66rem;letter-spacing:.2em;color:var(--gold-ink);margin-bottom:9px}
+.aim h3{font-family:var(--display);font-weight:600;font-size:1.12rem;line-height:1.3;color:var(--text);margin-bottom:9px}
+.aim p{font-size:1rem;line-height:1.58;margin:0}
+a.xref-in{color:var(--gold-ink);text-decoration:none;border-bottom:1px solid var(--gold);white-space:nowrap}
+a.xref-in:hover{color:var(--text)}
+/* settings */
+#setbtn span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.setbox{max-width:480px}
+.setrow{padding:14px 0;border-top:1px solid rgba(224,192,99,.18)}
+.setl{font-family:var(--sans);font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-lt);margin-bottom:9px}
+.setl span{letter-spacing:.02em;text-transform:none;color:#9AA6BA;margin-left:6px}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{font-family:var(--sans);font-size:.82rem;color:#DCE2EC;background:transparent;border:1px solid rgba(224,192,99,.35);
+  padding:9px 14px;min-height:40px;cursor:pointer;border-radius:2px}
+.seg button:hover:not(:disabled){border-color:var(--gold-lt);color:#fff}
+.seg button[aria-checked="true"]{background:var(--gold-lt);border-color:var(--gold-lt);color:var(--navy)}
+.seg button:disabled{opacity:.4;cursor:default}
+.tsseg{align-items:center}
+.tsseg output{font-family:var(--sans);font-size:.85rem;color:#fff;min-width:6.5em;text-align:center}
+.setdemo{margin:10px 0 0 !important;font-style:italic;color:#E8ECF3 !important;font-size:calc(1.1rem * var(--ts,1)) !important;line-height:1.5 !important}
+.setfoot{font-family:var(--sans);font-size:.78rem !important;color:#9AA6BA !important;margin:10px 0 0 !important;
+  border-top:1px solid rgba(224,192,99,.18);padding-top:14px}
+.setreset{display:block;background:none;border:0;padding:0;margin-top:6px;font:inherit;color:var(--gold-lt);text-decoration:underline;cursor:pointer}
+html.novn .vn{display:none}
+/* motion: only with html.motion (set by the script when allowed); the resting state is always fully visible */
+html.motion.intro #v-home .seal{animation:sealIn 1s cubic-bezier(.2,.7,.2,1) both}
+html.motion.intro #v-home .hero-verse{animation:riseIn .8s .3s cubic-bezier(.2,.7,.2,1) both}
+html.motion.intro #v-home .hero-rule{animation:ruleIn .7s .5s ease-out both;transform-origin:left center}
+html.motion.intro #v-home .hero h1{animation:riseIn .8s .55s cubic-bezier(.2,.7,.2,1) both}
+html.motion.intro #v-home .hero-sub{animation:riseIn .8s .7s cubic-bezier(.2,.7,.2,1) both}
+html.motion.intro #v-home .hero-btns{animation:riseIn .8s .82s cubic-bezier(.2,.7,.2,1) both}
+html.motion #v-home .seal::before{animation:glow 7s 1.2s ease-in-out infinite alternate}
+html.motion #v-home .seal::after{animation:sheen 11s 1.6s ease-in-out infinite}
+@supports ((-webkit-background-clip:text) or (background-clip:text)){
+  html.motion.intro #v-home .hero h1 .l2{background:linear-gradient(100deg,var(--gold-lt) 0 40%,#FFF3C4 50%,var(--gold-lt) 60% 100%);
+    background-size:300% 100%;background-position:100% 0;-webkit-background-clip:text;background-clip:text;color:transparent;
+    animation:shimmer 2.4s 1.5s ease-in-out both}}
+@keyframes sealIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:none}}
+@keyframes riseIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes ruleIn{from{transform:scaleX(0)}to{transform:none}}
+@keyframes glow{from{opacity:.35}to{opacity:.85}}
+@keyframes sheen{0%{opacity:0;background-position:120% 0}4%{opacity:1}22%{opacity:1;background-position:-20% 0}26%,100%{opacity:0;background-position:-20% 0}}
+@keyframes shimmer{from{background-position:100% 0}to{background-position:0 0}}
+html.motion.rv-on .rv{transition:opacity .75s cubic-bezier(.2,.7,.2,1),transform .75s cubic-bezier(.2,.7,.2,1)}
+html.motion.rv-on .rv:not(.in){opacity:0;transform:translateY(16px)}
+html.motion .vtext,html.motion .vcap{transition:opacity .5s ease,transform .5s ease}
+html.motion .vfig.fade .vtext,html.motion .vfig.fade .vcap{opacity:0}
+html.motion .vfig.fade .vtext{transform:translateY(6px)}
+html.nomotion *,html.nomotion *::before,html.nomotion *::after{animation:none !important;transition:none !important}
+@media print{html.rv-on .rv{opacity:1 !important;transform:none !important}}
 /* update notice and welcome note */
 .updbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));
   z-index:150;display:flex;align-items:center;gap:12px;background:var(--navy-3);color:#F0F3F8;
@@ -844,9 +935,10 @@ footer .report .ph{color:var(--gold-lt)}
 
 <header class="nav"><div class="wrap wide nav-in">
   <a class="brand" href="#/home" data-go="home" aria-label="Ankyra, home">
-    <img src="assets/img/ankyra-header.webp" srcset="assets/img/ankyra-header.webp 2x, assets/img/ankyra-header-3x.webp 3x"
+    <img src="assets/img/ankyra-header.webp" srcset="assets/img/ankyra-header.webp 2x, assets/img/ankyra-header-3x.webp 3x, assets/img/ankyra-header-4x.webp 4x"
       width="139" height="44" alt="Ankyra"></a>
   <nav class="nav-links" aria-label="Main">
+    <a href="#/home" data-go="home">Home</a>
     <a href="#/bible" data-go="bible">Bible</a>
     <a href="#/questions" data-go="questions">Questions</a>
     <a href="#/topics" data-go="topics">Topics</a>
@@ -854,6 +946,10 @@ footer .report .ph{color:var(--gold-lt)}
     <a href="#/apologetics" data-go="apologetics">Apologetics</a>
     <a href="#/about" data-go="about">About</a>
   </nav>
+  <button class="navbtn" type="button" id="setbtn" aria-haspopup="dialog" aria-controls="settings">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.1" fill="none" stroke="currentColor" stroke-width="1.7"/>
+      <path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+      <circle cx="12" cy="12" r="6.6" fill="none" stroke="currentColor" stroke-width="1.7"/></svg><span>Settings</span></button>
   <a class="navbtn" href="#/search" data-go="search" id="searchbtn">
     <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"/>
       <path d="M15.5 15.5 21 21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>Search</span></a>
@@ -863,16 +959,17 @@ footer .report .ph{color:var(--gold-lt)}
 
 <div class="menu" id="menu" hidden><div class="wrap wide">
   <nav aria-label="Site"><ul class="mlist">
+    <li><a href="#/home" data-go="home"><b>Home</b><span>What Ankyra is, and where to start</span></a></li>
     <li><a href="#/bible" data-go="bible"><b>Bible</b><span>Read any book, with study notes</span></a></li>
     <li><a href="#/questions" data-go="questions"><b>Questions</b><span>Honest answers to hard questions</span></a></li>
     <li><a href="#/topics" data-go="topics"><b>Topics</b><span>What the Bible says about a subject</span></a></li>
     <li><a href="#/resources" data-go="resources"><b>Resources</b><span>Guides to print or keep</span></a></li>
     <li><a href="#/apologetics" data-go="apologetics"><b>Apologetics</b><span>Reasons for faith, other beliefs</span></a></li>
-    <li><a href="#/about" data-go="about"><b>About</b><span>What Ankyra is and where to start</span></a></li>
+    <li><a href="#/about" data-go="about"><b>About</b><span>How the notes are made, sources and licences</span></a></li>
   </ul>
   <ul class="mlist2">
     <li><a href="#/church" data-go="church">Finding a church</a></li>
-    <li><a href="#/notes" data-go="notes">About these notes</a></li>
+    <li><button type="button" data-settings>Settings</button></li>
     <li><button type="button" data-keep>Keep it on your phone</button></li>
   </ul></nav>
   <a class="mresume" id="mresume" href="#/bible" hidden></a>
@@ -887,6 +984,45 @@ footer .report .ph{color:var(--gold-lt)}
       no account and no cost.</p>
     <div id="keepaction"></div>
     <div class="keepsave" id="keepsave"></div>
+  </div>
+</div>
+
+<div class="keep" id="settings" hidden>
+  <div class="keepbox setbox" role="dialog" aria-modal="true" aria-labelledby="seth">
+    <button class="keepx" type="button" id="setx" aria-label="Close">&times;</button>
+    <h3 id="seth">Settings</h3>
+    <div class="setrow" role="radiogroup" aria-labelledby="set-theme-l">
+      <div class="setl" id="set-theme-l">Appearance</div>
+      <div class="seg">
+        <button type="button" role="radio" data-set="theme" data-val="light">Light</button>
+        <button type="button" role="radio" data-set="theme" data-val="dark">Dark</button>
+        <button type="button" role="radio" data-set="theme" data-val="auto">Match my device</button>
+      </div>
+    </div>
+    <div class="setrow">
+      <div class="setl" id="set-ts-l">Text size <span>Bible and study notes</span></div>
+      <div class="seg tsseg" role="group" aria-labelledby="set-ts-l">
+        <button type="button" id="settsdown" aria-label="Smaller text">A&minus;</button>
+        <output id="settslabel" aria-live="polite">Standard</output>
+        <button type="button" id="settsup" aria-label="Larger text">A+</button>
+      </div>
+      <p class="setdemo" id="setdemo">We have this hope as an anchor for the soul, firm and secure.</p>
+    </div>
+    <div class="setrow" role="radiogroup" aria-labelledby="set-vn-l">
+      <div class="setl" id="set-vn-l">Verse numbers</div>
+      <div class="seg">
+        <button type="button" role="radio" data-set="versenums" data-val="on">Show</button>
+        <button type="button" role="radio" data-set="versenums" data-val="off">Hide</button>
+      </div>
+    </div>
+    <div class="setrow" role="radiogroup" aria-labelledby="set-mo-l">
+      <div class="setl" id="set-mo-l">Animations <span id="set-mo-note"></span></div>
+      <div class="seg">
+        <button type="button" role="radio" data-set="motion" data-val="on">On</button>
+        <button type="button" role="radio" data-set="motion" data-val="off">Off</button>
+      </div>
+    </div>
+    <p class="setfoot">Kept on this device only. <button type="button" class="setreset" id="setreset">Back to the standard settings</button></p>
   </div>
 </div>
 
@@ -927,7 +1063,8 @@ footer .report .ph{color:var(--gold-lt)}
 <div class="view active" id="v-home">
 <header class="hero">
   <div class="wrap">
-    <img class="hero-logo" src="assets/img/ankyra-seal.webp" width="200" height="200" alt="">
+    <span class="seal"><img class="hero-logo" src="assets/img/ankyra-seal-352.webp"
+      srcset="assets/img/ankyra-seal-352.webp 2x, assets/img/ankyra-seal-528.webp 3x, assets/img/ankyra-seal-704.webp 4x" width="176" height="176" alt=""></span>
     <figure class="hero-verse">
       <blockquote>We have this hope as an anchor for the soul, firm and secure.</blockquote>
       <figcaption><a class="xref-home" href="#/bible/HEB/6/19" data-ref="HEB/6/19">Hebrews 6:19</a></figcaption>
@@ -947,18 +1084,64 @@ footer .report .ph{color:var(--gold-lt)}
 
 <section class="band" id="who">
   <div class="wrap narrow">
-    <div class="topline"><div class="kicker">Who it&rsquo;s for</div>
+    <div class="topline rv"><div class="kicker">Who it&rsquo;s for</div>
       <h2>For anyone who wants to understand the Bible</h2></div>
-    <p class="lead">You might have been a Christian for years, or be opening a Bible for the first time. You might
-      still be working out whether any of it is true.</p>
-    <p>Ankyra is written for all of you. It uses everyday words, explains church words the first time they come up
+    <p class="lead rv">You might have followed Jesus for years, or maybe you&rsquo;ve only just begun. You might be
+      opening a Bible for the first time or you might not believe at all and want an honest account of what
+      Christians believe and why.</p>
+    <p class="rv">Ankyra has been developed for the most mature Christians, but also for those who are completely new
+      to the Christian faith, with the same care. If you are a Christian, it is here to help you read the Bible well
+      and grow in your faith. If you are not, it sets out the reality of the Christian faith, with the reasons
+      Christians give for believing it, without pressure on you or hiding the hard parts.</p>
+    <p class="rv">It uses everyday words, explains church words the first time they come up
       (<a href="docs/Ankyra-Church-Words-Explained.pdf" target="_blank" rel="noopener"><i>Church Words Explained</i></a>
-      covers the common ones), and is honest about where Christians disagree. You don&rsquo;t need an account, and nothing here costs
-      anything.</p>
+      covers the common ones), and we&rsquo;re honest about where Christians disagree. You don&rsquo;t need an
+      account, and nothing here costs anything.</p>
   </div>
 </section>
 
-<section class="band alt" id="parts">
+<section class="band dark versesec" id="verses" aria-roledescription="carousel" aria-label="Verses">
+  <div class="wrap narrow">
+    <figure class="vfig" id="vfig" aria-live="off">
+      <blockquote class="vtext" id="vtext">But in your hearts sanctify Christ as Lord. Always be prepared to give a defense to everyone who asks you the reason for the hope that is in you. But respond with gentleness and respect…</blockquote>
+      <figcaption class="vcap" id="vcap"><a id="vref" href="#/bible/1PE/3/15" data-ref="1PE/3/15">1 Peter 3:15</a>
+        <span id="vnote">Honest reasons, given gently</span></figcaption>
+    </figure>
+    <div class="vctl" id="vctl" hidden>
+      <div class="vdots" id="vdots" role="group" aria-label="Choose a verse"></div>
+      <button class="vpause" id="vpause" type="button" aria-label="Pause the verses" aria-pressed="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path class="ip" d="M9 7v10M15 7v10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path class="ig" d="M9 6.5v11l9-5.5z" fill="currentColor"/></svg></button>
+    </div>
+  </div>
+</section>
+
+<section class="band alt" id="mission">
+  <div class="wrap">
+    <div class="topline narrow rv"><div class="kicker">Our mission</div>
+      <h2>An anchor for the soul</h2></div>
+    <p class="lead narrowp rv">Ankyra exists to help everyone know the God of the Bible, and especially aims to help
+      people come to hold to the hope that <a class="xref-in" href="#/bible/HEB/6/19" data-ref="HEB/6/19">Hebrews 6</a>
+      calls an anchor for the soul. Ankyra&rsquo;s aim is to:</p>
+    <div class="aims">
+      <div class="aim rv"><div class="n">01</div><h3>Strengthen the church</h3>
+        <p>Help Christians read the Bible carefully and understand it well
+          (<a class="xref-in" href="#/bible/PSA/119/9" data-ref="PSA/119/9">Psalm 119:9</a>), so that their faith grows
+          deeper and stands firm (<a class="xref-in" href="#/bible/PHP/2/16" data-ref="PHP/2/16">Philippians 2:16</a>):
+          alongside the local church, never in place of it.</p></div>
+      <div class="aim rv"><div class="n">02</div><h3>Give an honest account</h3>
+        <p>Set out the Christian faith clearly and truthfully for people who don&rsquo;t yet believe, with the
+          evidence and the reasons why Jesus is the answer to everything, in the hope that they will come to trust
+          Christ for themselves. The faith is true, so it can bear honest questions; nothing hard is hidden.</p></div>
+      <div class="aim rv"><div class="n">03</div><h3>Keep growing</h3>
+        <p>Full study notes for every book of the Bible, built to the same standard as Matthew and Philippians, with
+          more questions, topics and guides as they are written. Everything here is free; we want you to know God
+          just as much as we do, because Jesus changed our lives, and knowing Him each day is a gift we have no right
+          to deprive anyone of.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="parts">
   <div class="wrap">
     <div class="topline narrow"><div class="kicker">What&rsquo;s here</div>
       <h2>What you&rsquo;ll find</h2></div>
@@ -991,7 +1174,7 @@ footer .report .ph{color:var(--gold-lt)}
   </div>
 </section>
 
-<section class="band" id="start">
+<section class="band alt" id="start">
   <div class="wrap">
     <div class="topline narrow"><div class="kicker">Where to start</div>
       <h2>Pick the one that sounds like you</h2></div>
@@ -1017,6 +1200,20 @@ footer .report .ph{color:var(--gold-lt)}
           start with <i>Read Your Own Bible Carefully</i>: one page of questions you can check in their own Bible.</p>
         <p class="go"><a href="#/questions" data-go="questions">Questions &rarr;</a>
           <a href="#/apologetics" data-go="apologetics">Apologetics &rarr;</a></p></div>
+      <div class="start"><h3>Going through something hard</h3>
+        <p>Suffering, grief and doubt are not new. The Bible is full of people who felt them, and it speaks to them
+          honestly. Start with the question of why God allows suffering, the topics on suffering and on doubt, and
+          <i>How to Pray</i>.</p>
+        <p class="go"><a href="#/questions#q-why-does-god-allow-suffering" data-go="questions" data-anchor="q-why-does-god-allow-suffering">Why does God allow suffering? &rarr;</a>
+          <a href="#/topics#t-suffering-and-persecution" data-go="topics" data-anchor="t-suffering-and-persecution">Suffering &rarr;</a>
+          <a href="#/topics#t-doubt-and-unbelief" data-go="topics" data-anchor="t-doubt-and-unbelief">Doubt &rarr;</a>
+          <a href="docs/Ankyra-How-to-Pray.pdf" target="_blank" rel="noopener">How to Pray (PDF)</a></p></div>
+      <div class="start"><h3>Reading with others</h3>
+        <p>With a small group or a friend, take one passage at a time. Every passage card in the notes ends with
+          questions <i>For discussion</i>. The <i>Discussion Sheet</i> gives the same four questions for any passage,
+          with space to write and help for whoever is leading.</p>
+        <p class="go"><a href="docs/Ankyra-Discussion-Sheet.pdf" target="_blank" rel="noopener">Discussion Sheet (PDF)</a>
+          <a href="#/bible/MAT/1" data-ref="MAT/1">Start with Matthew 1 &rarr;</a></p></div>
     </div>
   </div>
 </section>
@@ -1030,8 +1227,10 @@ footer .report .ph{color:var(--gold-lt)}
     <p>Another <span data-ns="progress">26</span> books have notes on every passage that are still being developed;
       they will be produced to the same standard. The other books have a short note on each chapter for now. The
       book list in the Bible shows where each book has got to.</p>
-    <p>The notes are written with the help of AI. In the complete notes, every claim is checked against the sources
-      listed on the note. Where Christians disagree, the notes set out the main views fairly.</p>
+    <p>The notes are built on established Christian and biblical scholarship: the commentaries, confessions and
+      other sources listed on each note. AI is used to check the notes and to deliver them to you here. In the
+      complete notes, every claim is checked against the sources listed on the note. Where Christians disagree, the
+      notes set out the main views fairly.</p>
     <p><a class="lnk" href="#/notes" data-go="notes">How the notes are made &rarr;</a></p>
   </div>
 </section>
@@ -1092,19 +1291,21 @@ footer .report .ph{color:var(--gold-lt)}
 <!-- ==================== ABOUT THESE NOTES ==================== -->
 <div class="view" id="v-notes">
   <div class="phead"><div class="wrap">
-    <div class="eyebrow">About these notes</div>
+    <div class="eyebrow">About Ankyra</div>
     <div class="rule"></div>
     <h1>How the notes work, and how they&rsquo;re made</h1>
-    <p>The study notes explain each passage in plain words, so that someone reading it for the first time can
-      follow what it says and why. This page explains how they are laid out, where they stand, and how they are
-      made.</p>
+    <p>Ankyra&rsquo;s study notes explain each passage in plain words, so that someone reading it for the first time
+      can follow what it says and why. This page explains how they are made, how they are laid out and where they
+      stand, how to report a mistake, and the sources and licences behind the site.</p>
   </div></div>
   <section class="band">
     <div class="wrap narrow stance" id="stance">
       <h2 id="about-made">How they&rsquo;re made</h2>
-      <p>The notes are written with the help of AI. In the books marked complete, every claim is checked against
-        the sources listed on the note, and the sources are linked wherever a free copy exists, so you can check
-        them yourself.</p>
+      <p>The notes are built on established Christian and biblical scholarship: the commentaries, historic
+        confessions, early Christian writers and other sources listed on each note. AI is used to check the notes
+        and to deliver them to you here. In the books marked complete, every claim is checked against the sources
+        listed on the note, and the sources are linked wherever a free copy exists, so you can check them
+        yourself.</p>
       <p>The notes for the other books are still being developed, and will be produced to the same standard. The
         book list in the Bible shows where each book has got to:</p>
       <p class="nkey"><span><span class="ndot complete"></span>Complete</span> <span><span class="ndot progress"></span>In progress:
@@ -1467,7 +1668,7 @@ footer .report .ph{color:var(--gold-lt)}
       <a href="#/bible" data-go="bible">Bible</a><a href="#/questions" data-go="questions">Questions</a>
       <a href="#/topics" data-go="topics">Topics</a><a href="#/resources" data-go="resources">Resources</a>
       <a href="#/apologetics" data-go="apologetics">Apologetics</a><a href="#/church" data-go="church">Finding a church</a>
-      <a href="#/notes" data-go="notes">About these notes</a><a href="#/about" data-go="about">About Ankyra</a>
+      <a href="#/about" data-go="about">About Ankyra</a>
     </nav>
   </div>
   <div class="f-sm">
@@ -1497,7 +1698,7 @@ footer .report .ph{color:var(--gold-lt)}
    same value (ankyra-v2, ankyra-v3 ...). Add any new always-needed file
    to SHELL in sw.js.
    ===================================================================== */
-const APP_VERSION = "ankyra-v6";
+const APP_VERSION = "ankyra-v7";
 
 /* Report a mistake: put the address between the quotes to switch on the
    "Report a mistake" email links (footer, About these notes). */
@@ -1670,16 +1871,16 @@ let searchFromHash = null;
    #/bible/BOOK/CH(/V), #/questions, #/topics, #/resources, #/apologetics,
    #/church, and #/home#section or #/bible#stance from the old menu. */
 const VIEWS = ["home","bible","questions","topics","resources","apologetics","church","notes","search"];
-const ALIAS = {about:"home"};
+const ALIAS = {about:"notes"};
 const TITLES = {home:"Ankyra", bible:"The Bible", questions:"Questions people ask", topics:"By topic",
-  resources:"Resources", apologetics:"Apologetics", church:"Finding a church", notes:"About these notes", search:"Search"};
+  resources:"Resources", apologetics:"Apologetics", church:"Finding a church", notes:"About Ankyra", search:"Search"};
 let current = "home";
 
 function setTitle(t){ document.title = (t && t !== "Ankyra") ? t + " · Ankyra" : "Ankyra: the Bible, with study notes"; }
 function markNav(name){
   document.querySelectorAll(".nav-links a, .mlist a, .tabbar a").forEach(a=>{
-    const g = a.getAttribute("data-go"), tab = !!a.closest(".tabbar");
-    const on = (ALIAS[g] || g) === name && (name !== "home" || tab) || (g === "about" && name === "home");
+    const g = a.getAttribute("data-go");
+    const on = (ALIAS[g] || g) === name;
     a.classList.toggle("on", on);
     if(on) a.setAttribute("aria-current","page"); else a.removeAttribute("aria-current");
   });
@@ -1690,6 +1891,8 @@ function go(name, anchor){
   name = ALIAS[name] || name;
   if(name === "bible" && anchor === "stance"){ name = "notes"; anchor = null; }  // old "Where these notes stand" link
   if(!VIEWS.includes(name)) name = "home";
+  let guideAnchor = null;                                                    // a question or topic, drawn after the list loads
+  if((name === "questions" || name === "topics") && anchor && /^[qt]-[a-z0-9-]+$/.test(anchor)){ guideAnchor = anchor; anchor = null; }
   if(anchor && !document.getElementById(anchor)) anchor = null;              // old home-page sections are gone
   VIEWS.forEach(v=>{
     const el = document.getElementById("v-"+v);
@@ -1700,16 +1903,25 @@ function go(name, anchor){
   closeMenu();
   if(name !== "bible") setTitle(TITLES[name]);
   if(name==="bible") initBible();
-  if(name==="home") paintResume();
+  if(name==="home"){ paintResume(); requestAnimationFrame(sizeVerses); }
   if(name==="search") initSearch();
   if(anchor){
     setTimeout(()=>{ const t=document.getElementById(anchor);
       if(t) t.scrollIntoView({behavior:"smooth"}); }, 40);
   } else { window.scrollTo(0,0); }
-  const want = "#/"+(asked === "about" ? "about" : name)+(anchor?("#"+anchor):"");
+  const hashAnchor = anchor || guideAnchor;
+  const want = "#/"+(name === "notes" && asked !== "notes" ? "about" : name)+(hashAnchor?("#"+hashAnchor):"");
   const keep = (name === "bible" && /^#\/bible\//.test(location.hash)) || (name === "search" && /^#\/search\//.test(location.hash));
   if(!keep && !popping && location.hash !== want) history.pushState({v:name,a:anchor}, "", want);
-  if(name === "questions" || name === "topics") initGuides(name);
+  if(name === "questions" || name === "topics") initGuides(name).then(()=>{ if(guideAnchor) showGuide(guideAnchor); });
+}
+/* open one question, or bring one topic into view (#/questions#q-why-does-god-allow-suffering, #/topics#t-…) */
+function slugOf(t){ return String(t).toLowerCase().replace(/&[a-z]+;/g,"").replace(/[’']/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,""); }
+function showGuide(id){
+  const el = document.getElementById(id); if(!el) return;
+  if(el.tagName === "DETAILS") el.open = true;
+  setTimeout(()=>{ el.scrollIntoView({behavior: motionOK() ? "smooth" : "auto", block:"start"});
+    const f = el.querySelector("summary, h2"); if(f){ if(!f.hasAttribute("tabindex") && f.tagName === "H2") f.setAttribute("tabindex","-1"); f.focus({preventScroll:true}); } }, 60);
 }
 
 let popping = false;          // true while responding to the back/forward buttons
@@ -2550,7 +2762,7 @@ function renderQuestions(){
   const el = document.getElementById("qlist");
   if(!el || el.dataset.done) return;
   el.innerHTML = GUIDES.questions.map(function(q, i){
-    return '<details class="qitem" id="q-'+i+'"><summary>'+q.q+'</summary><div class="qa-body">'+
+    return '<details class="qitem" id="q-'+slugOf(q.q)+'"><summary>'+q.q+'</summary><div class="qa-body">'+
       '<div class="qref">'+q.n+' '+q.r+' &middot; '+q.h+'</div>'+
       '<p>'+q.t+'</p>'+
       '<button type="button" class="qgo" data-b="'+q.b+'" data-c="'+q.c+'">Read '+q.n+' '+q.c+' &rarr;</button>'+
@@ -2571,7 +2783,7 @@ function renderTopics(){
         '<span class="tr">'+i.n+' '+i.c+':'+i.v+'</span>'+
         '<span class="th">'+(i.g || i.h)+'</span></button></li>';
     }).join("");
-    return '<div class="tcard" data-topic="'+name.replace(/"/g,'')+'"><h2>'+name+'</h2><ul>'+items+'</ul></div>';
+    return '<div class="tcard" id="t-'+slugOf(name)+'" data-topic="'+name.replace(/"/g,'')+'"><h2>'+name+'</h2><ul>'+items+'</ul></div>';
   }).join("");
   el.querySelectorAll("button[data-b]").forEach(function(li){
     li.addEventListener("click", function(){ saveScroll(); pendingCard = li.dataset.v; openPassage(li.dataset.b, li.dataset.c, li.dataset.v); });
@@ -2601,7 +2813,7 @@ function toggleMenu(){
 document.addEventListener("DOMContentLoaded", function(){
   const btn = document.getElementById("menubtn");
   if(btn) btn.addEventListener("click", toggleMenu);
-  document.addEventListener("keydown", function(e){ if(e.key === "Escape"){ closeMenu(); closeKeep(); closeTsize(); } });
+  document.addEventListener("keydown", function(e){ if(e.key === "Escape"){ closeMenu(); closeKeep(); closeTsize(); closeSettings(); } });
   ["keep","hello"].forEach(function(id){
     const kp = document.getElementById(id);
     if(kp) kp.addEventListener("click", function(e){ if(e.target === kp){ if(id==="keep") closeKeep(); else closeHello(); } });
@@ -2610,6 +2822,169 @@ document.addEventListener("DOMContentLoaded", function(){
   document.addEventListener("click", function(e){ const b = e.target.closest("[data-books]");
     if(b){ e.preventDefault(); go("bible"); setTimeout(openBooks, 60); } });
 });
+
+/* ---------- settings: appearance, text size, verse numbers, animations (kept on this device) ---------- */
+const REDUCE = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : null;
+const DARKQ = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+function themeSetting(){ const t = store("theme"); return (t === "dark" || t === "auto") ? t : "light"; }
+function applyTheme(){
+  let t = themeSetting();
+  if(t === "auto") t = (DARKQ && DARKQ.matches) ? "dark" : "light";
+  document.documentElement.setAttribute("data-theme", t);
+}
+function deviceReduces(){ return !!(REDUCE && REDUCE.matches); }
+function motionOK(){ return store("motion") !== "off" && !deviceReduces(); }
+function applyMotion(){
+  const d = document.documentElement, ok = motionOK();
+  d.classList.toggle("motion", ok); d.classList.toggle("nomotion", !ok);
+  if(!ok){ d.classList.remove("intro", "rv-on"); } else initReveal();
+  paintVerseControls();
+}
+function applyVerseNums(){ document.documentElement.classList.toggle("novn", store("versenums") === "off"); }
+let setOpener = null;
+function openSettings(){
+  const st = document.getElementById("settings"); if(!st) return;
+  setOpener = document.activeElement;
+  paintSettings(); st.hidden = false; document.body.classList.add("menuopen");
+  const b = document.getElementById("setbtn"); if(b) b.setAttribute("aria-expanded", "true");
+  const x = st.querySelector('[aria-checked="true"]') || document.getElementById("setx"); if(x) x.focus({preventScroll:true});
+}
+function closeSettings(){
+  const st = document.getElementById("settings"); if(!st || st.hidden) return;
+  st.hidden = true; document.body.classList.remove("menuopen");
+  const b = document.getElementById("setbtn"); if(b) b.setAttribute("aria-expanded", "false");
+  if(setOpener && setOpener.focus && document.contains(setOpener)) setOpener.focus({preventScroll:true});
+}
+function paintSettings(){
+  const val = {theme: themeSetting(), versenums: store("versenums") === "off" ? "off" : "on",
+    motion: (store("motion") === "off" || deviceReduces()) ? "off" : "on"};
+  document.querySelectorAll("#settings [data-set]").forEach(b=>{
+    const on = val[b.getAttribute("data-set")] === b.getAttribute("data-val");
+    b.setAttribute("aria-checked", on ? "true" : "false"); b.tabIndex = on ? 0 : -1;
+    if(b.getAttribute("data-set") === "motion") b.disabled = deviceReduces();
+  });
+  const note = document.getElementById("set-mo-note");
+  if(note) note.textContent = deviceReduces() ? "Off, because your device asks for less motion" : "";
+  const i = textSizeIndex(), l = document.getElementById("settslabel");
+  if(l) l.textContent = TNAMES[i];
+  const dn = document.getElementById("settsdown"), up = document.getElementById("settsup");
+  if(dn) dn.disabled = i === 0; if(up) up.disabled = i === TSIZES.length-1;
+}
+function chooseSetting(key, v){
+  if(key === "theme"){ store("theme", v === "light" ? null : v); applyTheme(); }
+  if(key === "versenums"){ store("versenums", v === "off" ? "off" : null); applyVerseNums(); }
+  if(key === "motion"){ store("motion", v === "off" ? "off" : null); applyMotion(); }
+  paintSettings();
+}
+function initSettings(){
+  const st = document.getElementById("settings"); if(!st) return;
+  const b = document.getElementById("setbtn"); if(b){ b.setAttribute("aria-expanded","false"); b.addEventListener("click", ()=>{ closeMenu(); openSettings(); }); }
+  document.addEventListener("click", e=>{ if(e.target.closest("[data-settings]")){ e.preventDefault(); closeMenu(); openSettings(); } });
+  document.getElementById("setx").addEventListener("click", closeSettings);
+  st.addEventListener("click", e=>{ if(e.target === st) closeSettings();
+    const c = e.target.closest("[data-set]"); if(c && !c.disabled) chooseSetting(c.getAttribute("data-set"), c.getAttribute("data-val")); });
+  document.getElementById("settsdown").addEventListener("click", ()=>{ stepTextSize(-1); paintSettings(); });
+  document.getElementById("settsup").addEventListener("click", ()=>{ stepTextSize(1); paintSettings(); });
+  document.getElementById("setreset").addEventListener("click", ()=>{
+    ["theme","versenums","motion"].forEach(k=>store(k, null)); store("textsize", null);
+    applyTheme(); applyVerseNums(); applyTextSize(); paintTsize(); applyMotion(); paintSettings(); });
+  st.addEventListener("keydown", e=>{
+    if(e.key === "Escape"){ e.preventDefault(); closeSettings(); return; }
+    const c = e.target.closest("[data-set]");
+    if(c && /^Arrow(Left|Right|Up|Down)$/.test(e.key)){        // radio groups: arrows move the choice
+      e.preventDefault();
+      const all = [...c.parentNode.querySelectorAll("[data-set]:not(:disabled)")]; if(!all.length) return;
+      const k = (all.indexOf(c) + (/Right|Down/.test(e.key) ? 1 : all.length-1)) % all.length;
+      chooseSetting(all[k].getAttribute("data-set"), all[k].getAttribute("data-val")); all[k].focus();
+      return;
+    }
+    if(e.key === "Tab"){                                         // keep focus inside the dialog
+      const f = [...st.querySelectorAll('button:not(:disabled), [href]')].filter(x=>x.offsetParent && x.tabIndex !== -1);
+      if(!f.length) return;
+      if(e.shiftKey && document.activeElement === f[0]){ e.preventDefault(); f[f.length-1].focus(); }
+      else if(!e.shiftKey && document.activeElement === f[f.length-1]){ e.preventDefault(); f[0].focus(); }
+    }
+  });
+  const onDev = ()=>{ if(themeSetting() === "auto") applyTheme(); };
+  if(DARKQ){ DARKQ.addEventListener ? DARKQ.addEventListener("change", onDev) : DARKQ.addListener(onDev); }
+  if(REDUCE){ const r = ()=>{ applyMotion(); paintSettings(); }; REDUCE.addEventListener ? REDUCE.addEventListener("change", r) : REDUCE.addListener(r); }
+}
+
+/* ---------- Home: sections rise into place as they scroll into view ---------- */
+let revealIO = null;
+function initReveal(){
+  if(!motionOK() || !("IntersectionObserver" in window)) return;
+  const d = document.documentElement;
+  if(!revealIO){
+    revealIO = new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add("in"); revealIO.unobserve(e.target); } }),
+      {rootMargin:"0px 0px -6% 0px"});
+    document.querySelectorAll("#parts .topline, #parts .card, #start .topline, #start .start, #notesnow .wrap > *, #phone .wrap > *")
+      .forEach(el=>el.classList.add("rv"));
+    ["#parts .card", "#start .start", "#mission .aim"].forEach(sel=>
+      document.querySelectorAll(sel).forEach((el,i)=>{ el.style.transitionDelay = (i % 3) * 90 + "ms"; }));
+  }
+  document.querySelectorAll("#v-home .rv:not(.in)").forEach(el=>revealIO.observe(el));
+  d.classList.add("rv-on");
+}
+
+/* ---------- Home: the verse band (one at a time, fading; dots to choose; pauses while touched or hovered) ---------- */
+const VERSES = [
+  {r:"1 Peter 3:15", ref:"1PE/3/15", t:"But in your hearts sanctify Christ as Lord. Always be prepared to give a defense to everyone who asks you the reason for the hope that is in you. But respond with gentleness and respect…", c:"Honest reasons, given gently"},
+  {r:"Acts 17:11", ref:"ACT/17/11", t:"Now the Bereans were more noble-minded than the Thessalonians, for they received the message with great eagerness and examined the Scriptures every day to see if these teachings were true.", c:"Check it for yourself in the Scriptures"},
+  {r:"John 20:31", ref:"JHN/20/31", t:"But these are written so that you may believe that Jesus is the Christ, the Son of God, and that by believing you may have life in His name.", c:"Why the Gospels were written"}
+];
+const VERSE_DELAY = 9000, VERSE_TICK = 250;
+let vIdx = 0, vElapsed = 0, vPaused = false, vHold = false, vSeen = false, vTimer = null, vHoldT = null;
+function paintVerse(i, byReader){
+  const fig = document.getElementById("vfig"); if(!fig) return;
+  const v = VERSES[i];
+  fig.setAttribute("aria-live", byReader ? "polite" : "off");
+  const draw = ()=>{
+    document.getElementById("vtext").textContent = v.t;
+    const a = document.getElementById("vref"); a.textContent = v.r; a.href = "#/bible/" + v.ref; a.setAttribute("data-ref", v.ref);
+    document.getElementById("vnote").textContent = v.c;
+    document.querySelectorAll("#vdots button").forEach((b,n)=>b.setAttribute("aria-current", n === i ? "true" : "false"));
+    fig.classList.remove("fade");
+  };
+  if(motionOK()){ fig.classList.add("fade"); setTimeout(draw, 480); } else draw();
+}
+function sizeVerses(){
+  const t = document.getElementById("vtext"); if(!t || !t.offsetWidth) return;
+  const keep = t.textContent; let h = 0; t.style.minHeight = "";
+  VERSES.forEach(v=>{ t.textContent = v.t; h = Math.max(h, t.offsetHeight); });
+  t.textContent = keep; t.style.minHeight = h + "px";
+}
+function paintVerseControls(){
+  const p = document.getElementById("vpause"); if(!p) return;
+  p.hidden = !motionOK();
+  p.setAttribute("aria-pressed", vPaused ? "true" : "false");
+  p.setAttribute("aria-label", vPaused ? "Play the verses" : "Pause the verses");
+}
+function initVerses(){
+  const sec = document.getElementById("verses"), dots = document.getElementById("vdots"); if(!sec || !dots) return;
+  dots.innerHTML = VERSES.map((v,i)=>'<button type="button" aria-label="Verse '+(i+1)+' of '+VERSES.length+': '+v.r+'" aria-current="'+(i===0)+'"></button>').join("");
+  dots.querySelectorAll("button").forEach((b,i)=>b.addEventListener("click", ()=>{ vIdx = i; vElapsed = 0; paintVerse(i, true); }));
+  document.getElementById("vctl").hidden = false;
+  document.getElementById("vpause").addEventListener("click", ()=>{ vPaused = !vPaused; vElapsed = 0; paintVerseControls(); });
+  const hold = on=>{ clearTimeout(vHoldT); if(on) vHold = true; else vHoldT = setTimeout(()=>{ vHold = false; }, 2500); };
+  sec.addEventListener("pointerenter", e=>{ if(e.pointerType === "mouse") hold(true); });
+  sec.addEventListener("pointerleave", e=>{ if(e.pointerType === "mouse") hold(false); });
+  sec.addEventListener("touchstart", ()=>hold(true), {passive:true});
+  sec.addEventListener("touchend", ()=>hold(false), {passive:true});
+  sec.addEventListener("focusin", ()=>hold(true));
+  sec.addEventListener("focusout", ()=>hold(false));
+  if("IntersectionObserver" in window) new IntersectionObserver(es=>{ vSeen = es[es.length-1].isIntersecting; }, {threshold:.4}).observe(sec);
+  else vSeen = true;
+  paintVerseControls();
+  vTimer = setInterval(()=>{
+    if(!motionOK() || vPaused || vHold || !vSeen || document.hidden || current !== "home") return;
+    vElapsed += VERSE_TICK;
+    if(vElapsed >= VERSE_DELAY){ vElapsed = 0; vIdx = (vIdx + 1) % VERSES.length; paintVerse(vIdx, false); }
+  }, VERSE_TICK);
+  let rt = null; window.addEventListener("resize", ()=>{ clearTimeout(rt); rt = setTimeout(sizeVerses, 150); });
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(sizeVerses);
+  sizeVerses();
+}
 
 /* ---------- add to home screen ---------- */
 let deferredInstall = null;
@@ -3017,7 +3392,7 @@ document.addEventListener("click", e=>{
 });
 function openQuestion(i){
   go("questions");
-  initGuides("questions").then(()=>{ const d = document.getElementById("q-"+i); if(d){ d.open = true; d.scrollIntoView({behavior:"smooth", block:"start"}); } });
+  initGuides("questions").then(()=>{ const q = GUIDES && GUIDES.questions[i]; const d = q && document.getElementById("q-"+slugOf(q.q)); if(d){ d.open = true; d.scrollIntoView({behavior:"smooth", block:"start"}); } });
 }
 function openTopic(name){
   go("topics");
@@ -3167,6 +3542,11 @@ function boot(){
   if(y) y.textContent = String(new Date().getFullYear());
   paintReport();
   applyTextSize();
+  initSettings();
+  if(motionOK()){ document.documentElement.classList.add("motion", "intro"); setTimeout(()=>document.documentElement.classList.remove("intro"), 4600); }
+  else document.documentElement.classList.add("nomotion");
+  initVerses();
+  initReveal();
   const [v,an] = readHash();
   go(v, an);
   if(v === "search" && searchFromHash) runSearch(searchFromHash);

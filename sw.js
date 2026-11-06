@@ -9,13 +9,15 @@
    On update this worker deletes only caches whose names start "cob-" (the site's old name)
    or "ankyra-" (other than these two). It never touches anything else, and never clears
    anyone's saved settings. */
-const VERSION = "ankyra-v6";
+const VERSION = "ankyra-v7";
 const SHELL = VERSION;
 const DATA = "ankyra-data";
 const SHELL_FILES = [
   "./", "./index.html", "./manifest.webmanifest", "./favicon.ico", "./apple-touch-icon.png",
   "./assets/favicon-32.png", "./assets/favicon-16.png", "./assets/icon-192.png", "./assets/icon-512.png",
-  "./assets/img/ankyra-header.webp", "./assets/img/ankyra-header-3x.webp", "./assets/img/ankyra-seal.webp",
+  "./assets/img/ankyra-header.webp", "./assets/img/ankyra-header-3x.webp", "./assets/img/ankyra-header-4x.webp",
+  "./assets/img/ankyra-seal.webp", "./assets/img/ankyra-seal-352.webp", "./assets/img/ankyra-seal-528.webp",
+  "./assets/img/ankyra-seal-704.webp",
   "./assets/img/ankyra-mono-gold.png",
   "./assets/fonts/cinzel-latin.woff2", "./assets/fonts/ebgaramond-latin.woff2", "./assets/fonts/ebgaramond-italic-latin.woff2",
   "./assets/fonts/poppins-300-latin.woff2", "./assets/fonts/poppins-400-latin.woff2", "./assets/fonts/poppins-500-latin.woff2"

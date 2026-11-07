@@ -55,12 +55,12 @@
   --navy:#0E1B31; --navy-2:#132441; --navy-3:#1B2F52; --navy-4:#243D66;
   --gold:#C2A24E; --gold-lt:#E0C063; --gold-dp:#A97C2C;
   --gold-dim:rgba(224,192,99,.32);
-  --cream:#F8F4EA; --paper:#F1EADC; /* beige surfaces: no white anywhere */
+  --cream:#F1EADC; --paper:#E8DECA; /* beige page, deeper beige cards and alternate bands: no white anywhere */
   --ink:#212C3B; --ink-2:#47536440; --muted:#6B7280;
   --line:#E3E1DA;
   --page-bg:var(--cream); --surface:var(--paper); --text:#212C3B;
-  --gold-ink:#84601E; /* gold for small text on light backgrounds (the deep gold is too faint there; a touch darker on beige) */
-  --text-2:#4A5568; --text-3:#596170; --border:#DDD4C3;
+  --gold-ink:#7E5B1C; /* gold for small text on light backgrounds (the deep gold is too faint there; a touch darker on beige) */
+  --text-2:#4A5568; --text-3:#596170; --border:#D5C9B2;
   color-scheme:light;
   --display:'Cinzel',Georgia,serif;
   --body:'EB Garamond',Georgia,serif;
@@ -863,9 +863,9 @@ footer .report .ph{color:var(--gold-lt)}
 .stance .creed p{color:#C9D1DE}
 .stance .creed a{color:var(--gold-lt)}
 .stance .c-est{background:rgba(60,140,80,.16);color:#1F5E33}
-.stance .c-wide{background:rgba(60,110,170,.15);color:#2D5F9A}
-.stance .c-deb{background:rgba(190,130,30,.16);color:#8A5A12}
-.stance .c-div{background:rgba(190,80,60,.15);color:#9A3F2E}
+.stance .c-wide{background:rgba(60,110,170,.15);color:#27578E}
+.stance .c-deb{background:rgba(190,130,30,.16);color:#74490C}
+.stance .c-div{background:rgba(190,80,60,.15);color:#8C3727}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .stance .c-est{background:rgba(120,190,140,.17);color:#A4D8B3}
   :root:not([data-theme="light"]) .stance .c-wide{background:rgba(140,180,225,.17);color:#AFCBEA}
   :root:not([data-theme="light"]) .stance .c-deb{background:rgba(232,180,95,.17);color:#EBC283}
@@ -1711,7 +1711,7 @@ footer .report .ph{color:var(--gold-lt)}
    same value (ankyra-v2, ankyra-v3 ...). Add any new always-needed file
    to SHELL in sw.js.
    ===================================================================== */
-const APP_VERSION = "ankyra-v8";
+const APP_VERSION = "ankyra-v9";
 
 /* Report a mistake: put the address between the quotes to switch on the
    "Report a mistake" email links (footer, About these notes). */

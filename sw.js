@@ -9,7 +9,7 @@
    On update this worker deletes only caches whose names start "cob-" (the site's old name)
    or "ankyra-" (other than these two). It never touches anything else, and never clears
    anyone's saved settings. */
-const VERSION = "ankyra-v8";
+const VERSION = "ankyra-v9";
 const SHELL = VERSION;
 const DATA = "ankyra-data";
 const SHELL_FILES = [
